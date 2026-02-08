@@ -1,8 +1,10 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import Cell from "./components/Cell.vue";
+</script>
 
 <template>
   <div v-for="r in 8" :key="r">
-    <button v-for="c in 8" :key="c" data-test="cell" />
+    <Cell v-for="c in 8" :key="c" :is-hidden="true" />
   </div>
 </template>
 

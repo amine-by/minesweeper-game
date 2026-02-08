@@ -2,15 +2,21 @@ import { describe, expect, it } from "vitest";
 
 import { mount } from "@vue/test-utils";
 import App from "./App.vue";
+import Cell from "./components/Cell.vue";
 
 describe("App", () => {
   describe("core-gameplay", () => {
     it("should display an 8x8 grid", () => {
       const app = mount(App);
-      expect(app.findAll("[data-test='cell']")).toHaveLength(64);
+      const cells = app.findAllComponents(Cell);
+      expect(cells).toHaveLength(64);
     });
     it("should make all grid cells hidden on intial load", () => {
-      throw new Error("");
+      const app = mount(App);
+      const cells = app.findAllComponents(Cell);
+      cells.forEach((cell) => {
+        expect(cell.props("isHidden")).toBeTruthy();
+      });
     });
     it("should reveal a hidden cell when left clicked", () => {
       throw new Error("");
