@@ -1,6 +1,9 @@
-<script setup>
+<script setup lang="ts">
 defineProps({
   isHidden: Boolean,
 });
 </script>
-<template></template>
+
+<template>
+  <button @click.left="$emit('reveal')" />
+</template>

@@ -18,8 +18,11 @@ describe("App", () => {
         expect(cell.props("isHidden")).toBeTruthy();
       });
     });
-    it("should reveal a hidden cell when left clicked", () => {
-      throw new Error("");
+    it("should reveal a hidden cell when left clicked", async () => {
+      const app = mount(App);
+      const cell = app.findAllComponents(Cell)[36];
+      await cell?.trigger("click.left");
+      expect(cell?.props("isHidden")).toBeFalsy();
     });
     it("should place 10 mines after the first cell is revealed", () => {
       throw new Error("");
