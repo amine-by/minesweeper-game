@@ -1,6 +1,7 @@
 <script setup lang="ts">
 defineProps({
   isHidden: Boolean,
+  isMine: Boolean,
 });
 </script>
 

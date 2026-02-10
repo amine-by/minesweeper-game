@@ -24,8 +24,12 @@ describe("App", () => {
       await cell?.trigger("click.left");
       expect(cell?.props("isHidden")).toBeFalsy();
     });
-    it("should place 10 mines after the first cell is revealed", () => {
-      throw new Error("");
+    it("should place 10 mines after the first cell is revealed", async () => {
+      const app = mount(App);
+      const cells = app.findAllComponents(Cell);
+      await cells[36]?.trigger("click.left");
+      const mineCount = cells.filter((c) => c.props("isMine")).length;
+      expect(mineCount).toBe(10);
     });
     it("should reveal all cells when a mine is revealed", () => {
       throw new Error("");
