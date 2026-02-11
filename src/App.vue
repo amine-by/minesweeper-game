@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import Cell from "./components/Cell.vue";
 import { ref } from "vue";
+
+type GameState = "IDLE" | "PLAYING" | "LOST" | "WON";
+const gameState = ref<GameState>("IDLE");
 const grid = ref<{ isHidden: boolean; isMine: boolean }[][]>(
   Array.from({ length: 8 }, () =>
     Array.from({ length: 8 }, () => ({ isHidden: true, isMine: false })),
@@ -27,9 +30,45 @@ function reveal(rowIndex: number, columnIndex: number) {
   if (rowIndex < 0 || rowIndex >= grid.value.length) return;
   if (columnIndex < 0 || columnIndex >= grid.value[rowIndex]!.length) return;
 
-  grid.value[rowIndex]![columnIndex]!.isHidden = false;
-  placeMines(rowIndex, columnIndex);
+  const currentCell = grid.value[rowIndex]![columnIndex];
+
+  switch (gameState.value) {
+    case "IDLE":
+      currentCell!.isHidden = false;
+      placeMines(rowIndex, columnIndex);
+      gameState.value = "PLAYING";
+      break;
+
+    case "PLAYING":
+      if (currentCell!.isMine) {
+        grid.value.forEach((row) =>
+          row
+            .filter((cell) => cell.isMine)
+            .forEach((mine) => (mine.isHidden = false)),
+        );
+        gameState.value = "LOST";
+      } else {
+        currentCell!.isHidden = false;
+        const revealedCellsSum = grid.value.reduce(
+          (acc, row) => acc + row.filter((cell) => !cell.isHidden).length,
+          0,
+        );
+        if (revealedCellsSum === 54) {
+          grid.value.forEach((row) =>
+            row
+              .filter((cell) => cell.isMine)
+              .forEach((mine) => (mine.isHidden = false)),
+          );
+          gameState.value = "WON";
+        }
+      }
+      break;
+  }
 }
+
+defineExpose({
+  gameState,
+});
 </script>
 
 <template>
