@@ -3,8 +3,12 @@ import Cell from "./components/Cell.vue";
 import { ref } from "vue";
 
 type GameState = "IDLE" | "PLAYING" | "LOST" | "WON";
+
+export type Cell = { isHidden: boolean; isMine: boolean };
+export type Grid = Cell[][];
+
 const gameState = ref<GameState>("IDLE");
-const grid = ref<{ isHidden: boolean; isMine: boolean }[][]>(
+const grid = ref<Grid>(
   Array.from({ length: 8 }, () =>
     Array.from({ length: 8 }, () => ({ isHidden: true, isMine: false })),
   ),
