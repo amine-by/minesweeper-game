@@ -70,18 +70,16 @@ describe("App", () => {
         { rowIndex: 1, columnIndex: 0 },
         { rowIndex: 1, columnIndex: 1 },
       ]);
+
       const app = mount(App);
-      const cell = app.findComponent("[data-test='cell-1-2']") as VueWrapper<
-        InstanceType<typeof Cell>
-      >;
-      await cell.trigger("click.left");
+
+      const firstSafeCell = app.findComponent("[data-test='cell-5-5']");
+      await firstSafeCell.trigger("click.left");
+
       const mines = app
         .findAllComponents(Cell)
-        .filter((cell) => cell.props("isMine"));
-      mines.forEach((mine) => {
-        expect(mine.props("isHidden")).toBe(true);
-      });
-      await mines[0]?.trigger("click.left");
+        .filter((c) => c.props("isMine"));
+
       mines.forEach((mine) => {
         expect(mine.props("isHidden")).toBe(false);
       });
@@ -112,8 +110,49 @@ describe("App", () => {
       await cell2.trigger("click.left");
       expect(cell2.props("adjacentMinesCount")).toBe(3);
     });
-    it("should recursively reveal all adjacent cells when a hidden cell having no adjacent mines is revealed", () => {
-      throw new Error("");
+    it("should recursively reveal all adjacent cells when a hidden cell having no adjacent mines is revealed", async () => {
+      vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
+        { rowIndex: 0, columnIndex: 2 },
+        { rowIndex: 1, columnIndex: 2 },
+        { rowIndex: 2, columnIndex: 0 },
+        { rowIndex: 2, columnIndex: 1 },
+        { rowIndex: 2, columnIndex: 2 },
+        { rowIndex: 0, columnIndex: 5 },
+        { rowIndex: 1, columnIndex: 5 },
+        { rowIndex: 2, columnIndex: 5 },
+        { rowIndex: 2, columnIndex: 6 },
+        { rowIndex: 2, columnIndex: 7 },
+      ]);
+
+      const app = mount(App);
+
+      const cell1 = app.findComponent("[data-test='cell-0-0']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell1.trigger("click.left");
+
+      for (let r1 = 0; r1 < 2; r1++) {
+        for (let c1 = 0; c1 < 2; c1++) {
+          const currentCell = app.findComponent(
+            `[data-test='cell-${r1}-${c1}']`,
+          ) as VueWrapper<InstanceType<typeof Cell>>;
+          expect(currentCell.props("isHidden")).toBe(false);
+        }
+      }
+
+      const cell2 = app.findComponent("[data-test='cell-0-7']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell2.trigger("click.left");
+
+      for (let r2 = 0; r2 < 2; r2++) {
+        for (let c2 = 6; c2 < 8; c2++) {
+          const currentCell = app.findComponent(
+            `[data-test='cell-${r2}-${c2}']`,
+          ) as VueWrapper<InstanceType<typeof Cell>>;
+          expect(currentCell.props("isHidden")).toBe(false);
+        }
+      }
     });
   });
 

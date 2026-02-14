@@ -2,7 +2,10 @@
 import Cell from "./components/Cell.vue";
 import { ref } from "vue";
 import { generateMinesCoordinates } from "./game/mines";
-import { countAdjacentMines } from "./game/adjacency";
+import {
+  countAdjacentMines,
+  getAdjacentCellCoordinates,
+} from "./game/adjacency";
 
 type GameState = "IDLE" | "PLAYING" | "LOST" | "WON";
 
@@ -21,12 +24,12 @@ const grid = ref<Grid>(
 );
 
 function placeMines(revealedRowIndex: number, revealedColumnIndex: number) {
-  const mineCoordinates = generateMinesCoordinates(
+  const minesCoordinates = generateMinesCoordinates(
     revealedRowIndex,
     revealedColumnIndex,
   );
 
-  mineCoordinates.forEach(({ rowIndex, columnIndex }) => {
+  minesCoordinates.forEach(({ rowIndex, columnIndex }) => {
     const cellRow = grid.value[rowIndex];
     if (!cellRow) return;
 
@@ -53,6 +56,14 @@ function reveal(rowIndex: number, columnIndex: number) {
         grid: grid.value,
         cellCoordinates: { rowIndex, columnIndex },
       });
+      if (currentCell.adjacentMinesCount === 0) {
+        getAdjacentCellCoordinates({ rowIndex, columnIndex }).forEach(
+          ({ rowIndex, columnIndex }) => {
+            if (grid.value[rowIndex]?.[columnIndex]?.isHidden)
+              reveal(rowIndex, columnIndex);
+          },
+        );
+      }
       break;
 
     case "PLAYING":
@@ -81,13 +92,20 @@ function reveal(rowIndex: number, columnIndex: number) {
           grid: grid.value,
           cellCoordinates: { rowIndex, columnIndex },
         });
+        if (currentCell.adjacentMinesCount === 0) {
+          getAdjacentCellCoordinates({ rowIndex, columnIndex }).forEach(
+            ({ rowIndex, columnIndex }) => {
+              if (grid.value[rowIndex]?.[columnIndex]?.isHidden)
+                reveal(rowIndex, columnIndex);
+            },
+          );
+        }
       }
       break;
   }
 }
 
 defineExpose({
-  grid,
   gameState,
 });
 </script>
