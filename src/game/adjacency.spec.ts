@@ -150,7 +150,7 @@ describe("adjacency", () => {
       ).toBe(0);
     });
 
-    it("should return 2 when only one of the adjacent cells is a mine", () => {
+    it("should return 1 when only one of the adjacent cells is a mine", () => {
       const grid = Array.from({ length: 8 }, () =>
         Array.from({ length: 8 }, () => ({ isHidden: true, isMine: false })),
       );
@@ -158,11 +158,11 @@ describe("adjacency", () => {
       const adjacentCellCoordinates =
         getAdjacentCellCoordinates(cellCoordinates);
       adjacentCellCoordinates
-        .slice(0, 2)
+        .slice(0, 1)
         .forEach(({ rowIndex, columnIndex }) => {
           grid[rowIndex]![columnIndex]!.isMine = true;
         });
-      expect(countAdjacentMines({ grid, cellCoordinates })).toBe(2);
+      expect(countAdjacentMines({ grid, cellCoordinates })).toBe(1);
     });
 
     it("should return 8 when all adjacent cells are mines", () => {

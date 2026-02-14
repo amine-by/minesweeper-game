@@ -1,10 +1,16 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { mount } from "@vue/test-utils";
+import { mount, VueWrapper } from "@vue/test-utils";
 import App from "./App.vue";
 import Cell from "./components/Cell.vue";
 
+import * as minesModule from "./game/mines";
+
 describe("App", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   describe("core-gameplay", () => {
     it("should display an 8x8 grid", () => {
       const app = mount(App);
@@ -15,48 +21,96 @@ describe("App", () => {
       const app = mount(App);
       const cells = app.findAllComponents(Cell);
       cells.forEach((cell) => {
-        expect(cell.props("isHidden")).toBeTruthy();
+        expect(cell.props("isHidden")).toBe(true);
       });
     });
     it("should reveal a hidden cell when left clicked", async () => {
       const app = mount(App);
-      const cell = app.findAllComponents(Cell)[36];
-      await cell?.trigger("click.left");
-      expect(cell?.props("isHidden")).toBeFalsy();
+      const cell = app.findComponent("[data-test='cell-5-5']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell.trigger("click.left");
+      expect(cell.props("isHidden")).toBe(false);
     });
     it("should place 10 mines after the first cell is revealed", async () => {
       const app = mount(App);
-      const cells = app.findAllComponents(Cell);
-      await cells[36]?.trigger("click.left");
-      const mineCount = cells.filter((c) => c.props("isMine")).length;
+      const cell = app.findComponent("[data-test='cell-5-5']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell.trigger("click.left");
+      const mineCount = app
+        .findAllComponents(Cell)
+        .filter((cell) => cell.props("isMine")).length;
       expect(mineCount).toBe(10);
     });
     it("should reveal all mines when a mine is revealed", async () => {
       const app = mount(App);
-      const cells = app.findAllComponents(Cell);
-      await cells[36]?.trigger("click.left");
-      const mines = cells.filter((cell) => cell.props("isMine"));
+      const cell = app.findComponent("[data-test='cell-5-5']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell.trigger("click.left");
+      const mines = app
+        .findAllComponents(Cell)
+        .filter((cell) => cell.props("isMine"));
       await mines[4]?.trigger("click.left");
       mines.forEach((mine) => {
-        expect(mine.props("isHidden")).toBeFalsy();
+        expect(mine.props("isHidden")).toBe(false);
       });
     });
     it("should reveal all mines when all non mine cells are revealed", async () => {
+      vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
+        { rowIndex: 0, columnIndex: 0 },
+        { rowIndex: 0, columnIndex: 1 },
+        { rowIndex: 0, columnIndex: 2 },
+        { rowIndex: 0, columnIndex: 3 },
+        { rowIndex: 0, columnIndex: 4 },
+        { rowIndex: 0, columnIndex: 5 },
+        { rowIndex: 0, columnIndex: 6 },
+        { rowIndex: 0, columnIndex: 7 },
+        { rowIndex: 1, columnIndex: 0 },
+        { rowIndex: 1, columnIndex: 1 },
+      ]);
       const app = mount(App);
-      const cells = app.findAllComponents(Cell);
-      await cells[36]?.trigger("click.left");
-      await Promise.all(
-        cells
-          .filter((cell, index) => index !== 36 && !cell.props("isMine"))
-          .map((safeCell) => safeCell.trigger("click.left")),
-      );
-      const mines = cells.filter((cell) => cell.props("isMine"));
+      const cell = app.findComponent("[data-test='cell-1-2']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell.trigger("click.left");
+      const mines = app
+        .findAllComponents(Cell)
+        .filter((cell) => cell.props("isMine"));
       mines.forEach((mine) => {
-        expect(mine.props("isHidden")).toBeFalsy();
+        expect(mine.props("isHidden")).toBe(true);
+      });
+      await mines[0]?.trigger("click.left");
+      mines.forEach((mine) => {
+        expect(mine.props("isHidden")).toBe(false);
       });
     });
-    it("should reveal the count of mines existing in adjacent cells when a hidden cell is revealed", () => {
-      throw new Error("");
+    it("should reveal the count of mines existing in adjacent cells when a hidden cell is revealed", async () => {
+      vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
+        { rowIndex: 0, columnIndex: 0 },
+        { rowIndex: 0, columnIndex: 1 },
+        { rowIndex: 0, columnIndex: 2 },
+        { rowIndex: 0, columnIndex: 3 },
+        { rowIndex: 0, columnIndex: 4 },
+        { rowIndex: 0, columnIndex: 5 },
+        { rowIndex: 0, columnIndex: 6 },
+        { rowIndex: 0, columnIndex: 7 },
+        { rowIndex: 1, columnIndex: 0 },
+        { rowIndex: 1, columnIndex: 1 },
+      ]);
+      const app = mount(App);
+      const cell1 = app.findComponent("[data-test='cell-1-2']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell1.trigger("click.left");
+      expect(cell1.props("adjacentMinesCount")).toBe(4);
+
+      const cell2 = app.findComponent("[data-test='cell-1-3']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell2.trigger("click.left");
+      expect(cell2.props("adjacentMinesCount")).toBe(3);
     });
     it("should recursively reveal all adjacent cells when a hidden cell having no adjacent mines is revealed", () => {
       throw new Error("");

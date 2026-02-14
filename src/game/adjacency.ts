@@ -42,6 +42,6 @@ export function countAdjacentMines({
   cellCoordinates,
 }: CountAdjacentMinesParams) {
   return getAdjacentCellCoordinates(cellCoordinates).filter(
-    ({ rowIndex, columnIndex }) => grid[rowIndex]![columnIndex]?.isMine,
+    ({ rowIndex, columnIndex }) => grid[rowIndex]?.[columnIndex]?.isMine,
   ).length;
 }

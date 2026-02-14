@@ -2,6 +2,7 @@
 defineProps({
   isHidden: Boolean,
   isMine: Boolean,
+  adjacentMinesCount: Number,
 });
 </script>
 
