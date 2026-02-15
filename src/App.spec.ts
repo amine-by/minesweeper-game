@@ -21,7 +21,7 @@ describe("App", () => {
       const app = mount(App);
       const cells = app.findAllComponents(Cell);
       cells.forEach((cell) => {
-        expect(cell.props("isHidden")).toBe(true);
+        expect(cell.props("state")).toBe("HIDDEN");
       });
     });
     it("should reveal a hidden cell when left clicked", async () => {
@@ -30,7 +30,7 @@ describe("App", () => {
         InstanceType<typeof Cell>
       >;
       await cell.trigger("click.left");
-      expect(cell.props("isHidden")).toBe(false);
+      expect(cell.props("state")).toBe("REVEALED");
     });
     it("should place 10 mines after the first cell is revealed", async () => {
       const app = mount(App);
@@ -44,17 +44,32 @@ describe("App", () => {
       expect(mineCount).toBe(10);
     });
     it("should reveal all mines when a mine is revealed", async () => {
+      vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
+        { rowIndex: 0, columnIndex: 1 },
+        { rowIndex: 0, columnIndex: 2 },
+        { rowIndex: 0, columnIndex: 3 },
+        { rowIndex: 0, columnIndex: 4 },
+        { rowIndex: 0, columnIndex: 5 },
+        { rowIndex: 0, columnIndex: 6 },
+        { rowIndex: 0, columnIndex: 7 },
+        { rowIndex: 1, columnIndex: 0 },
+        { rowIndex: 1, columnIndex: 1 },
+        { rowIndex: 1, columnIndex: 2 },
+      ]);
       const app = mount(App);
-      const cell = app.findComponent("[data-test='cell-5-5']") as VueWrapper<
+      const cell = app.findComponent("[data-test='cell-0-0']") as VueWrapper<
         InstanceType<typeof Cell>
       >;
       await cell.trigger("click.left");
+      const mine = app.findComponent("[data-test='cell-0-1']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await mine?.trigger("click.left");
       const mines = app
         .findAllComponents(Cell)
         .filter((cell) => cell.props("isMine"));
-      await mines[4]?.trigger("click.left");
       mines.forEach((mine) => {
-        expect(mine.props("isHidden")).toBe(false);
+        expect(mine.props("state")).toBe("REVEALED");
       });
     });
     it("should reveal all mines when all non mine cells are revealed", async () => {
@@ -81,7 +96,7 @@ describe("App", () => {
         .filter((c) => c.props("isMine"));
 
       mines.forEach((mine) => {
-        expect(mine.props("isHidden")).toBe(false);
+        expect(mine.props("state")).toBe("REVEALED");
       });
     });
     it("should reveal the count of mines existing in adjacent cells when a hidden cell is revealed", async () => {
@@ -136,7 +151,7 @@ describe("App", () => {
           const currentCell = app.findComponent(
             `[data-test='cell-${r1}-${c1}']`,
           ) as VueWrapper<InstanceType<typeof Cell>>;
-          expect(currentCell.props("isHidden")).toBe(false);
+          expect(currentCell.props("state")).toBe("REVEALED");
         }
       }
 
@@ -150,7 +165,7 @@ describe("App", () => {
           const currentCell = app.findComponent(
             `[data-test='cell-${r2}-${c2}']`,
           ) as VueWrapper<InstanceType<typeof Cell>>;
-          expect(currentCell.props("isHidden")).toBe(false);
+          expect(currentCell.props("state")).toBe("REVEALED");
         }
       }
     });
@@ -162,41 +177,95 @@ describe("App", () => {
       expect(app.vm.gameState).toBe("IDLE");
     });
     it("should set the game state to 'PLAYING' after the first cell is revealed", async () => {
+      vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
+        { rowIndex: 0, columnIndex: 1 },
+        { rowIndex: 0, columnIndex: 2 },
+        { rowIndex: 0, columnIndex: 3 },
+        { rowIndex: 0, columnIndex: 4 },
+        { rowIndex: 0, columnIndex: 5 },
+        { rowIndex: 0, columnIndex: 6 },
+        { rowIndex: 0, columnIndex: 7 },
+        { rowIndex: 1, columnIndex: 0 },
+        { rowIndex: 1, columnIndex: 1 },
+        { rowIndex: 1, columnIndex: 2 },
+      ]);
       const app = mount(App);
-      const cells = app.findAllComponents(Cell);
-      await cells[36]?.trigger("click.left");
+      const cell = app.findComponent("[data-test='cell-0-0']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell.trigger("click.left");
       expect(app.vm.gameState).toBe("PLAYING");
     });
     it("should set the game state to 'LOST' after a mine is revealed", async () => {
+      vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
+        { rowIndex: 0, columnIndex: 1 },
+        { rowIndex: 0, columnIndex: 2 },
+        { rowIndex: 0, columnIndex: 3 },
+        { rowIndex: 0, columnIndex: 4 },
+        { rowIndex: 0, columnIndex: 5 },
+        { rowIndex: 0, columnIndex: 6 },
+        { rowIndex: 0, columnIndex: 7 },
+        { rowIndex: 1, columnIndex: 0 },
+        { rowIndex: 1, columnIndex: 1 },
+        { rowIndex: 1, columnIndex: 2 },
+      ]);
       const app = mount(App);
-      const cells = app.findAllComponents(Cell);
-      await cells[36]?.trigger("click.left");
-      const mine = cells.find((cell) => cell.props("isMine"));
-      mine?.trigger("click.left");
+      const cell = app.findComponent("[data-test='cell-0-0']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell.trigger("click.left");
+      const mine = app.findComponent("[data-test='cell-0-1']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await mine.trigger("click.left");
       expect(app.vm.gameState).toBe("LOST");
     });
     it("should set the game state to 'WON' after all non mine cells are revealed", async () => {
+      vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
+        { rowIndex: 0, columnIndex: 0 },
+        { rowIndex: 0, columnIndex: 1 },
+        { rowIndex: 0, columnIndex: 2 },
+        { rowIndex: 0, columnIndex: 3 },
+        { rowIndex: 0, columnIndex: 4 },
+        { rowIndex: 0, columnIndex: 5 },
+        { rowIndex: 0, columnIndex: 6 },
+        { rowIndex: 0, columnIndex: 7 },
+        { rowIndex: 1, columnIndex: 0 },
+        { rowIndex: 1, columnIndex: 1 },
+      ]);
       const app = mount(App);
-      const cells = app.findAllComponents(Cell);
-      await cells[36]?.trigger("click.left");
-      await Promise.all(
-        cells
-          .filter((cell, index) => index !== 36 && !cell.props("isMine"))
-          .map((safeCell) => safeCell.trigger("click.left")),
-      );
+      const cell = app.findComponent("[data-test='cell-5-5']");
+      await cell.trigger("click.left");
       expect(app.vm.gameState).toBe("WON");
     });
   });
 
   describe("flags", () => {
-    it("should mark a hidden cell by a flag when right clicked", () => {
-      throw new Error("");
+    it("should mark a hidden cell by a flag when right clicked", async () => {
+      const app = mount(App);
+      const cell = app.findComponent("[data-test='cell-5-5']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell.trigger("click.right");
+      expect(cell.props("state")).toBe("FLAGGED");
     });
-    it("should unmark a flagged cell when right clicked", () => {
-      throw new Error("");
+    it("should unmark a flagged cell when right clicked", async () => {
+      const app = mount(App);
+      const cell = app.findComponent("[data-test='cell-5-5']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell.trigger("click.right");
+      await cell.trigger("click.right");
+      expect(cell.props("state")).toBe("HIDDEN");
     });
-    it("should not reveal a flagged cell when left clicked", () => {
-      throw new Error("");
+    it("should not reveal a flagged cell when left clicked", async () => {
+      const app = mount(App);
+      const cell = app.findComponent("[data-test='cell-5-5']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell.trigger("click.right");
+      await cell.trigger("click.left");
+      expect(cell.props("state")).toBe("FLAGGED");
     });
   });
 });

@@ -10,7 +10,7 @@ import {
 type GameState = "IDLE" | "PLAYING" | "LOST" | "WON";
 
 export type Cell = {
-  isHidden: boolean;
+  state: "HIDDEN" | "REVEALED" | "FLAGGED";
   isMine: boolean;
   adjacentMinesCount?: number;
 };
@@ -19,7 +19,7 @@ export type Grid = Cell[][];
 const gameState = ref<GameState>("IDLE");
 const grid = ref<Grid>(
   Array.from({ length: 8 }, () =>
-    Array.from({ length: 8 }, () => ({ isHidden: true, isMine: false })),
+    Array.from({ length: 8 }, () => ({ state: "HIDDEN", isMine: false })),
   ),
 );
 
@@ -47,23 +47,24 @@ function reveal(rowIndex: number, columnIndex: number) {
   const currentCell = currentRow[columnIndex];
   if (!currentCell) return;
 
+  if (currentCell.state === "FLAGGED") return;
+
   switch (gameState.value) {
     case "IDLE":
-      currentCell.isHidden = false;
+      currentCell.state = "REVEALED";
       placeMines(rowIndex, columnIndex);
       gameState.value = "PLAYING";
       currentCell.adjacentMinesCount = countAdjacentMines({
         grid: grid.value,
         cellCoordinates: { rowIndex, columnIndex },
       });
-      if (currentCell.adjacentMinesCount === 0) {
+      if (currentCell.adjacentMinesCount === 0)
         getAdjacentCellCoordinates({ rowIndex, columnIndex }).forEach(
           ({ rowIndex, columnIndex }) => {
-            if (grid.value[rowIndex]?.[columnIndex]?.isHidden)
+            if (grid.value[rowIndex]?.[columnIndex]?.state === "HIDDEN")
               reveal(rowIndex, columnIndex);
           },
         );
-      }
       break;
 
     case "PLAYING":
@@ -71,20 +72,21 @@ function reveal(rowIndex: number, columnIndex: number) {
         grid.value.forEach((row) =>
           row
             .filter((cell) => cell.isMine)
-            .forEach((mine) => (mine.isHidden = false)),
+            .forEach((mine) => (mine.state = "REVEALED")),
         );
         gameState.value = "LOST";
       } else {
-        currentCell.isHidden = false;
+        currentCell.state = "REVEALED";
         const revealedCellsSum = grid.value.reduce(
-          (acc, row) => acc + row.filter((cell) => !cell.isHidden).length,
+          (acc, row) =>
+            acc + row.filter((cell) => cell.state === "REVEALED").length,
           0,
         );
         if (revealedCellsSum === 54) {
           grid.value.forEach((row) =>
             row
               .filter((cell) => cell.isMine)
-              .forEach((mine) => (mine.isHidden = false)),
+              .forEach((mine) => (mine.state = "REVEALED")),
           );
           gameState.value = "WON";
         }
@@ -92,17 +94,30 @@ function reveal(rowIndex: number, columnIndex: number) {
           grid: grid.value,
           cellCoordinates: { rowIndex, columnIndex },
         });
-        if (currentCell.adjacentMinesCount === 0) {
+        if (currentCell.adjacentMinesCount === 0)
           getAdjacentCellCoordinates({ rowIndex, columnIndex }).forEach(
             ({ rowIndex, columnIndex }) => {
-              if (grid.value[rowIndex]?.[columnIndex]?.isHidden)
+              if (grid.value[rowIndex]?.[columnIndex]?.state === "HIDDEN")
                 reveal(rowIndex, columnIndex);
             },
           );
-        }
       }
       break;
   }
+}
+
+function flag(rowIndex: number, columnIndex: number) {
+  const currentRow = grid.value[rowIndex];
+  if (!currentRow) return;
+
+  const currentCell = currentRow[columnIndex];
+  if (!currentCell) return;
+
+  if (currentCell.state === "FLAGGED") {
+    currentCell.state = "HIDDEN";
+    return;
+  }
+  currentCell.state = "FLAGGED";
 }
 
 defineExpose({
@@ -115,10 +130,11 @@ defineExpose({
     <Cell
       v-for="(column, columnIndex) in row"
       :key="columnIndex"
-      :is-hidden="column.isHidden"
+      :state="column.state"
       :is-mine="column.isMine"
       :adjacent-mines-count="column.adjacentMinesCount"
       v-on:reveal="reveal(rowIndex, columnIndex)"
+      v-on:flag="flag(rowIndex, columnIndex)"
       :data-test="`cell-${rowIndex}-${columnIndex}`"
     />
   </div>

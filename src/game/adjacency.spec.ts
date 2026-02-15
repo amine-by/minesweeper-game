@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { countAdjacentMines, getAdjacentCellCoordinates } from "./adjacency";
+import type { Grid } from "@/App.vue";
 
 describe("adjacency", () => {
   describe("getAdjacentCellsIndexes", () => {
@@ -138,8 +139,8 @@ describe("adjacency", () => {
 
   describe("countAdjacentMines", () => {
     it("should return 0 when no adjacent cell is a mine", () => {
-      const grid = Array.from({ length: 8 }, () =>
-        Array.from({ length: 8 }, () => ({ isHidden: true, isMine: false })),
+      const grid: Grid = Array.from({ length: 8 }, () =>
+        Array.from({ length: 8 }, () => ({ state: "HIDDEN", isMine: false })),
       );
 
       expect(
@@ -151,8 +152,8 @@ describe("adjacency", () => {
     });
 
     it("should return 1 when only one of the adjacent cells is a mine", () => {
-      const grid = Array.from({ length: 8 }, () =>
-        Array.from({ length: 8 }, () => ({ isHidden: true, isMine: false })),
+      const grid: Grid = Array.from({ length: 8 }, () =>
+        Array.from({ length: 8 }, () => ({ state: "HIDDEN", isMine: false })),
       );
       const cellCoordinates = { rowIndex: 2, columnIndex: 2 };
       const adjacentCellCoordinates =
@@ -166,8 +167,8 @@ describe("adjacency", () => {
     });
 
     it("should return 8 when all adjacent cells are mines", () => {
-      const grid = Array.from({ length: 8 }, () =>
-        Array.from({ length: 8 }, () => ({ isHidden: true, isMine: false })),
+      const grid: Grid = Array.from({ length: 8 }, () =>
+        Array.from({ length: 8 }, () => ({ state: "HIDDEN", isMine: false })),
       );
       const cellCoordinates = { rowIndex: 2, columnIndex: 2 };
       const adjacentCellCoordinates =
