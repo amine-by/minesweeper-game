@@ -72,7 +72,7 @@ describe("App", () => {
         expect(mine.props("state")).toBe("REVEALED");
       });
     });
-    it("should reveal all mines when all non mine cells are revealed", async () => {
+    it("should flag all mines when all non mine cells are revealed", async () => {
       vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
         { rowIndex: 0, columnIndex: 0 },
         { rowIndex: 0, columnIndex: 1 },
@@ -96,7 +96,7 @@ describe("App", () => {
         .filter((c) => c.props("isMine"));
 
       mines.forEach((mine) => {
-        expect(mine.props("state")).toBe("REVEALED");
+        expect(mine.props("state")).toBe("FLAGGED");
       });
     });
     it("should reveal the count of mines existing in adjacent cells when a hidden cell is revealed", async () => {

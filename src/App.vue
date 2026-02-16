@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Cell from "./components/Cell.vue";
+import Cell, { type CellProps } from "./components/Cell.vue";
 import { ref } from "vue";
 import { generateMinesCoordinates } from "./game/mines";
 import {
@@ -9,12 +9,7 @@ import {
 
 type GameState = "IDLE" | "PLAYING" | "LOST" | "WON";
 
-export type Cell = {
-  state: "HIDDEN" | "REVEALED" | "FLAGGED";
-  isMine: boolean;
-  adjacentMinesCount?: number;
-};
-export type Grid = Cell[][];
+export type Grid = CellProps[][];
 
 const gameState = ref<GameState>("IDLE");
 const grid = ref<Grid>(
@@ -86,7 +81,7 @@ function reveal(rowIndex: number, columnIndex: number) {
           grid.value.forEach((row) =>
             row
               .filter((cell) => cell.isMine)
-              .forEach((mine) => (mine.state = "REVEALED")),
+              .forEach((mine) => (mine.state = "FLAGGED")),
           );
           gameState.value = "WON";
         }
@@ -126,7 +121,11 @@ defineExpose({
 </script>
 
 <template>
-  <div v-for="(row, rowIndex) in grid" :key="rowIndex">
+  <div
+    :style="{ display: 'flex', flexDirection: 'row' }"
+    v-for="(row, rowIndex) in grid"
+    :key="rowIndex"
+  >
     <Cell
       v-for="(column, columnIndex) in row"
       :key="columnIndex"
