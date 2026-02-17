@@ -267,5 +267,14 @@ describe("App", () => {
       await cell.trigger("click.left");
       expect(cell.props("state")).toBe("FLAGGED");
     });
+    it("should not flag a revealed cell when right clicked", async () => {
+      const app = mount(App);
+      const cell = app.findComponent("[data-test='cell-5-5']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell.trigger("click.left");
+      await cell.trigger("click.right");
+      expect(cell.props("state")).toBe("REVEALED");
+    });
   });
 });

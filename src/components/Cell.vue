@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, type CSSProperties, type StyleValue } from "vue";
+import { computed } from "vue";
 
 export type CellProps = {
   state: "HIDDEN" | "REVEALED" | "FLAGGED";
@@ -9,29 +9,7 @@ export type CellProps = {
 
 const { state, isMine, adjacentMinesCount } = defineProps<CellProps>();
 
-const styleHashmap: Record<CellProps["state"], CSSProperties> = {
-  HIDDEN: {
-    backgroundColor: "lightgray",
-    borderWidth: "8px",
-    borderRightColor: "darkgray",
-    borderBottomColor: "darkgray",
-    borderLeftColor: "white",
-    borderTopColor: "white",
-  },
-  FLAGGED: {
-    backgroundColor: "lightgray",
-    borderWidth: "8px",
-    borderRightColor: "darkgray",
-    borderBottomColor: "darkgray",
-    borderLeftColor: "white",
-    borderTopColor: "white",
-  },
-  REVEALED: {
-    backgroundColor: "gray",
-    borderWidth: "4px",
-    borderColor: "darkgray",
-  },
-};
+const stateClass = computed(() => `cell--${state.toLowerCase()}`);
 
 const content = computed(() => {
   if (state === "FLAGGED") return "🚩";
@@ -39,26 +17,65 @@ const content = computed(() => {
   if (state === "REVEALED") {
     if (isMine) return "💣";
     if (adjacentMinesCount === 0) return "";
-    return String(adjacentMinesCount);
+    return adjacentMinesCount;
   }
 
   return "";
 });
+
+const contentClass = computed(() =>
+  typeof content.value === "number" ? "cell--text" : "",
+);
 </script>
 
 <template>
   <button
-    :style="{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '40px',
-      height: '40px',
-      ...styleHashmap[state],
-    }"
-    @click.left="$emit('reveal')"
+    class="cell"
+    @click.left.prevent="$emit('reveal')"
     @click.right.prevent="$emit('flag')"
   >
-    {{ content }}
+    <div :class="stateClass">
+      <span :class="contentClass">{{ content }}</span>
+    </div>
   </button>
 </template>
+
+<style scoped>
+.cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 40px;
+  height: 40px;
+  background-color: #0e0e0e;
+  font-family: "Nunito", sans-serif;
+  font-size: 24px;
+}
+
+.cell--text {
+  background-image: linear-gradient(to bottom right, #002966, #0052cc);
+  background-clip: text;
+  color: transparent;
+}
+
+.cell--hidden,
+.cell--flagged {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 1px;
+  background-image: linear-gradient(to bottom right, #d27d49, #87460e);
+}
+
+.cell--revealed {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 1px;
+  background-image: linear-gradient(to bottom right, #fce6b4, #fbd195);
+}
+</style>

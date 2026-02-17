@@ -108,6 +108,8 @@ function flag(rowIndex: number, columnIndex: number) {
   const currentCell = currentRow[columnIndex];
   if (!currentCell) return;
 
+  if (currentCell.state === "REVEALED") return;
+
   if (currentCell.state === "FLAGGED") {
     currentCell.state = "HIDDEN";
     return;
@@ -121,22 +123,31 @@ defineExpose({
 </script>
 
 <template>
-  <div
-    :style="{ display: 'flex', flexDirection: 'row' }"
-    v-for="(row, rowIndex) in grid"
-    :key="rowIndex"
-  >
-    <Cell
-      v-for="(column, columnIndex) in row"
-      :key="columnIndex"
-      :state="column.state"
-      :is-mine="column.isMine"
-      :adjacent-mines-count="column.adjacentMinesCount"
-      v-on:reveal="reveal(rowIndex, columnIndex)"
-      v-on:flag="flag(rowIndex, columnIndex)"
-      :data-test="`cell-${rowIndex}-${columnIndex}`"
-    />
+  <div class="grid">
+    <div class="row" v-for="(row, rowIndex) in grid" :key="rowIndex">
+      <Cell
+        v-for="(column, columnIndex) in row"
+        :key="columnIndex"
+        :state="column.state"
+        :is-mine="column.isMine"
+        :adjacent-mines-count="column.adjacentMinesCount"
+        v-on:reveal="reveal(rowIndex, columnIndex)"
+        v-on:flag="flag(rowIndex, columnIndex)"
+        :data-test="`cell-${rowIndex}-${columnIndex}`"
+      />
+    </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.grid {
+  width: fit-content;
+  border-color: #0e0e0e;
+  border-width: 1px;
+  border-style: solid;
+}
+.row {
+  display: flex;
+  flex-direction: row;
+}
+</style>

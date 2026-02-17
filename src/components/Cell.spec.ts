@@ -11,28 +11,18 @@ describe("Cell", () => {
           isMine: false,
         },
       });
-      const cellStyle = cell.attributes("style");
-      expect(cellStyle).toContain("background-color: lightgray");
-      expect(cellStyle).toContain("border-width: 8px");
-      expect(cellStyle).toContain("border-right-color: darkgray");
-      expect(cellStyle).toContain("border-bottom-color: darkgray");
-      expect(cellStyle).toContain("border-left-color: white");
-      expect(cellStyle).toContain("border-top-color: white");
+      const inner = cell.find("div");
+      expect(inner.classes()).toContain("cell--hidden");
     });
-    it("should display hidden style when state is 'FLAGGED'", () => {
+    it("should display flagged style when state is 'FLAGGED'", () => {
       const cell = mount(Cell, {
         props: {
           state: "FLAGGED",
           isMine: false,
         },
       });
-      const cellStyle = cell.attributes("style");
-      expect(cellStyle).toContain("background-color: lightgray");
-      expect(cellStyle).toContain("border-width: 8px");
-      expect(cellStyle).toContain("border-right-color: darkgray");
-      expect(cellStyle).toContain("border-bottom-color: darkgray");
-      expect(cellStyle).toContain("border-left-color: white");
-      expect(cellStyle).toContain("border-top-color: white");
+      const inner = cell.find("div");
+      expect(inner.classes()).toContain("cell--flagged");
     });
     it("should display revlead style when state is 'REVEALED'", () => {
       const cell = mount(Cell, {
@@ -41,10 +31,8 @@ describe("Cell", () => {
           isMine: false,
         },
       });
-      const cellStyle = cell.attributes("style");
-      expect(cellStyle).toContain("background-color: gray");
-      expect(cellStyle).toContain("border-width: 4px");
-      expect(cellStyle).toContain("border-color: darkgray");
+      const inner = cell.find("div");
+      expect(inner.classes()).toContain("cell--revealed");
     });
   });
 

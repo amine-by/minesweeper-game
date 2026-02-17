@@ -12,6 +12,7 @@
     "type-check": "vue-tsc --build"
   },
   "dependencies": {
+    "@fontsource/nunito": "^5.2.7",
     "vue": "^3.5.27"
   },
   "devDependencies": {
