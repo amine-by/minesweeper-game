@@ -24,7 +24,9 @@ const content = computed(() => {
 });
 
 const contentClass = computed(() =>
-  typeof content.value === "number" ? "cell--text" : "",
+  typeof content.value === "number" && content.value > 0
+    ? `cell--content--number cell--content--${content.value}`
+    : "",
 );
 </script>
 
@@ -52,10 +54,41 @@ const contentClass = computed(() =>
   font-size: 24px;
 }
 
-.cell--text {
-  background-image: linear-gradient(to bottom right, #002966, #0052cc);
+.cell--content--number {
   background-clip: text;
   color: transparent;
+}
+
+.cell--content--1 {
+  background-image: linear-gradient(to bottom right, #002966, #0052cc);
+}
+
+.cell--content--2 {
+  background-image: linear-gradient(to bottom right, #003309, #00991c);
+}
+
+.cell--content--3 {
+  background-image: linear-gradient(to bottom right, #660000, #cc0000);
+}
+
+.cell--content--4 {
+  background-image: linear-gradient(to bottom right, #4b0066, #9600cc);
+}
+
+.cell--content--5 {
+  background-image: linear-gradient(to bottom right, #005866, #00b1cc);
+}
+
+.cell--content--6 {
+  background-image: linear-gradient(to bottom right, #662c00, #cc5800);
+}
+
+.cell--content--7 {
+  background-image: linear-gradient(to bottom right, #66004c, #cc0099);
+}
+
+.cell--content--8 {
+  background-image: linear-gradient(to bottom right, #666600, #cccc00);
 }
 
 .cell--hidden,
