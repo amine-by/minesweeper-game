@@ -1,15 +1,26 @@
 <script setup lang="ts">
 import { computed } from "vue";
 
-export type CellProps = {
+export type CellType = {
   state: "HIDDEN" | "REVEALED" | "FLAGGED";
   isMine: boolean;
   adjacentMinesCount?: number;
 };
 
-const { state, isMine, adjacentMinesCount } = defineProps<CellProps>();
+type CellProps = CellType & {
+  isWon: boolean;
+};
 
-const stateClass = computed(() => `cell--${state.toLowerCase()}`);
+const { state, isMine, adjacentMinesCount, isWon } = defineProps<CellProps>();
+
+const innerClass = computed(() => {
+  if (state === "HIDDEN") return "cell--inner--hidden";
+  if (state === "FLAGGED")
+    if (isWon) return "cell--inner--won";
+    else return "cell--inner--hidden";
+  if (isMine) return "cell--inner--lost";
+  return "cell--inner--revealed";
+});
 
 const content = computed(() => {
   if (state === "FLAGGED") return "🚩";
@@ -36,7 +47,7 @@ const contentClass = computed(() =>
     @click.left.prevent="$emit('reveal')"
     @click.right.prevent="$emit('flag')"
   >
-    <div :class="stateClass">
+    <div class="cell--inner" :class="innerClass">
       <span :class="contentClass">{{ content }}</span>
     </div>
   </button>
@@ -88,27 +99,31 @@ const contentClass = computed(() =>
 }
 
 .cell--content--8 {
-  background-image: linear-gradient(to bottom right, #666600, #cccc00);
+  background-image: linear-gradient(to bottom right, #665700, #ccad00);
 }
 
-.cell--hidden,
-.cell--flagged {
+.cell--inner {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 38px;
   height: 38px;
   border-radius: 1px;
+}
+
+.cell--inner--hidden {
   background-image: linear-gradient(to bottom right, #d27d49, #87460e);
 }
 
-.cell--revealed {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 1px;
+.cell--inner--won {
+  background-image: linear-gradient(to bottom right, #00cc66, #006633);
+}
+
+.cell--inner--revealed {
   background-image: linear-gradient(to bottom right, #fce6b4, #fbd195);
+}
+
+.cell--inner--lost {
+  background-image: linear-gradient(to bottom right, #ff6666, #cc0000);
 }
 </style>

@@ -276,5 +276,55 @@ describe("App", () => {
       await cell.trigger("click.right");
       expect(cell.props("state")).toBe("REVEALED");
     });
+    it("should not flag a hidden cell when right clicked while game state is 'LOST'", async () => {
+      vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
+        { rowIndex: 0, columnIndex: 1 },
+        { rowIndex: 0, columnIndex: 2 },
+        { rowIndex: 0, columnIndex: 3 },
+        { rowIndex: 0, columnIndex: 4 },
+        { rowIndex: 0, columnIndex: 5 },
+        { rowIndex: 0, columnIndex: 6 },
+        { rowIndex: 0, columnIndex: 7 },
+        { rowIndex: 1, columnIndex: 0 },
+        { rowIndex: 1, columnIndex: 1 },
+        { rowIndex: 1, columnIndex: 2 },
+      ]);
+      const app = mount(App);
+      const cell1 = app.findComponent("[data-test='cell-0-0']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell1.trigger("click.left");
+      const mine = app.findComponent("[data-test='cell-0-1']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await mine.trigger("click.left");
+      const cell2 = app.findComponent("[data-test='cell-5-5']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await cell2.trigger("click.right");
+      expect(cell2.props("state")).toBe("HIDDEN");
+    });
+    it("should not unflag a flagged mine when right clicked while game state is 'WON'", async () => {
+      vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
+        { rowIndex: 0, columnIndex: 0 },
+        { rowIndex: 0, columnIndex: 1 },
+        { rowIndex: 0, columnIndex: 2 },
+        { rowIndex: 0, columnIndex: 3 },
+        { rowIndex: 0, columnIndex: 4 },
+        { rowIndex: 0, columnIndex: 5 },
+        { rowIndex: 0, columnIndex: 6 },
+        { rowIndex: 0, columnIndex: 7 },
+        { rowIndex: 1, columnIndex: 0 },
+        { rowIndex: 1, columnIndex: 1 },
+      ]);
+      const app = mount(App);
+      const cell = app.findComponent("[data-test='cell-5-5']");
+      await cell.trigger("click.left");
+      const mine = app.findComponent("[data-test='cell-0-0']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+      await mine.trigger("click.right");
+      expect(mine.props("state")).toBe("FLAGGED");
+    });
   });
 });

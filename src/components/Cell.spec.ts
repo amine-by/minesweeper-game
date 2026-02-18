@@ -4,35 +4,60 @@ import Cell from "./Cell.vue";
 
 describe("Cell", () => {
   describe("state", () => {
-    it("should display hidden style when state is 'HIDDEN'", () => {
+    it("should display hidden inner style when state is 'HIDDEN'", () => {
       const cell = mount(Cell, {
         props: {
           state: "HIDDEN",
           isMine: false,
+          isWon: false,
         },
       });
       const inner = cell.find("div");
-      expect(inner.classes()).toContain("cell--hidden");
+      expect(inner.classes()).toContain("cell--inner--hidden");
     });
-    it("should display flagged style when state is 'FLAGGED'", () => {
+    it("should display revealed inner style when state is 'FLAGGED' and isWon is false", () => {
       const cell = mount(Cell, {
         props: {
           state: "FLAGGED",
           isMine: false,
+          isWon: false,
         },
       });
       const inner = cell.find("div");
-      expect(inner.classes()).toContain("cell--flagged");
+      expect(inner.classes()).toContain("cell--inner--hidden");
     });
-    it("should display revlead style when state is 'REVEALED'", () => {
+    it("should display won inner style when state is 'FLAGGED' and isWon is true", () => {
+      const cell = mount(Cell, {
+        props: {
+          state: "FLAGGED",
+          isMine: false,
+          isWon: true,
+        },
+      });
+      const inner = cell.find("div");
+      expect(inner.classes()).toContain("cell--inner--won");
+    });
+    it("should display revealed inner style when state is 'REVEALED' and isMine is false", () => {
       const cell = mount(Cell, {
         props: {
           state: "REVEALED",
           isMine: false,
+          isWon: false,
         },
       });
       const inner = cell.find("div");
-      expect(inner.classes()).toContain("cell--revealed");
+      expect(inner.classes()).toContain("cell--inner--revealed");
+    });
+    it("should display lost inner style when state is 'REVEALED' and isMine is true", () => {
+      const cell = mount(Cell, {
+        props: {
+          state: "REVEALED",
+          isMine: true,
+          isWon: false,
+        },
+      });
+      const inner = cell.find("div");
+      expect(inner.classes()).toContain("cell--inner--lost");
     });
   });
 
@@ -42,6 +67,7 @@ describe("Cell", () => {
         props: {
           state: "HIDDEN",
           isMine: false,
+          isWon: false,
           adjacentMinesCount: 3,
         },
       });
@@ -54,6 +80,7 @@ describe("Cell", () => {
         props: {
           state: "FLAGGED",
           isMine: false,
+          isWon: false,
           adjacentMinesCount: 3,
         },
       });
@@ -66,6 +93,7 @@ describe("Cell", () => {
         props: {
           state: "REVEALED",
           isMine: true,
+          isWon: false,
           adjacentMinesCount: 0,
         },
       });
@@ -78,6 +106,7 @@ describe("Cell", () => {
         props: {
           state: "REVEALED",
           isMine: false,
+          isWon: false,
           adjacentMinesCount: 0,
         },
       });
@@ -90,6 +119,7 @@ describe("Cell", () => {
         props: {
           state: "REVEALED",
           isMine: false,
+          isWon: false,
           adjacentMinesCount: 1,
         },
       });
@@ -102,6 +132,7 @@ describe("Cell", () => {
         props: {
           state: "REVEALED",
           isMine: false,
+          isWon: false,
           adjacentMinesCount: 8,
         },
       });

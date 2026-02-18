@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import Cell, { type CellProps } from "./components/Cell.vue";
+import Cell, { type CellType } from "./components/Cell.vue";
 import { ref } from "vue";
 import { generateMinesCoordinates } from "./game/mines";
 import {
@@ -9,7 +9,7 @@ import {
 
 type GameState = "IDLE" | "PLAYING" | "LOST" | "WON";
 
-export type Grid = CellProps[][];
+export type Grid = CellType[][];
 
 const gameState = ref<GameState>("IDLE");
 const grid = ref<Grid>(
@@ -102,6 +102,8 @@ function reveal(rowIndex: number, columnIndex: number) {
 }
 
 function flag(rowIndex: number, columnIndex: number) {
+  if (gameState.value === "LOST" || gameState.value === "WON") return;
+
   const currentRow = grid.value[rowIndex];
   if (!currentRow) return;
 
@@ -123,23 +125,35 @@ defineExpose({
 </script>
 
 <template>
-  <div class="grid">
-    <div class="row" v-for="(row, rowIndex) in grid" :key="rowIndex">
-      <Cell
-        v-for="(column, columnIndex) in row"
-        :key="columnIndex"
-        :state="column.state"
-        :is-mine="column.isMine"
-        :adjacent-mines-count="column.adjacentMinesCount"
-        v-on:reveal="reveal(rowIndex, columnIndex)"
-        v-on:flag="flag(rowIndex, columnIndex)"
-        :data-test="`cell-${rowIndex}-${columnIndex}`"
-      />
+  <div class="screen">
+    <div class="grid">
+      <div class="row" v-for="(row, rowIndex) in grid" :key="rowIndex">
+        <Cell
+          v-for="(column, columnIndex) in row"
+          :key="columnIndex"
+          :state="column.state"
+          :is-mine="column.isMine"
+          :is-won="gameState === 'WON'"
+          :adjacent-mines-count="column.adjacentMinesCount"
+          v-on:reveal="reveal(rowIndex, columnIndex)"
+          v-on:flag="flag(rowIndex, columnIndex)"
+          :data-test="`cell-${rowIndex}-${columnIndex}`"
+        />
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
+.screen {
+  width: 100dvw;
+  height: 100dvh;
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  padding-top: 100px;
+}
+
 .grid {
   width: fit-content;
   border-color: #0e0e0e;
