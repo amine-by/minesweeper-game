@@ -45,23 +45,23 @@ describe("App", () => {
     });
     it("should reveal all mines when a mine is revealed", async () => {
       vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
-        { rowIndex: 0, columnIndex: 1 },
         { rowIndex: 0, columnIndex: 2 },
         { rowIndex: 0, columnIndex: 3 },
         { rowIndex: 0, columnIndex: 4 },
         { rowIndex: 0, columnIndex: 5 },
         { rowIndex: 0, columnIndex: 6 },
         { rowIndex: 0, columnIndex: 7 },
-        { rowIndex: 1, columnIndex: 0 },
-        { rowIndex: 1, columnIndex: 1 },
         { rowIndex: 1, columnIndex: 2 },
+        { rowIndex: 2, columnIndex: 0 },
+        { rowIndex: 2, columnIndex: 1 },
+        { rowIndex: 2, columnIndex: 2 },
       ]);
       const app = mount(App);
       const cell = app.findComponent("[data-test='cell-0-0']") as VueWrapper<
         InstanceType<typeof Cell>
       >;
       await cell.trigger("click.left");
-      const mine = app.findComponent("[data-test='cell-0-1']") as VueWrapper<
+      const mine = app.findComponent("[data-test='cell-0-2']") as VueWrapper<
         InstanceType<typeof Cell>
       >;
       await mine?.trigger("click.left");
@@ -178,16 +178,16 @@ describe("App", () => {
     });
     it("should set the game state to 'PLAYING' after the first cell is revealed", async () => {
       vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
-        { rowIndex: 0, columnIndex: 1 },
         { rowIndex: 0, columnIndex: 2 },
         { rowIndex: 0, columnIndex: 3 },
         { rowIndex: 0, columnIndex: 4 },
         { rowIndex: 0, columnIndex: 5 },
         { rowIndex: 0, columnIndex: 6 },
         { rowIndex: 0, columnIndex: 7 },
-        { rowIndex: 1, columnIndex: 0 },
-        { rowIndex: 1, columnIndex: 1 },
         { rowIndex: 1, columnIndex: 2 },
+        { rowIndex: 2, columnIndex: 0 },
+        { rowIndex: 2, columnIndex: 1 },
+        { rowIndex: 2, columnIndex: 2 },
       ]);
       const app = mount(App);
       const cell = app.findComponent("[data-test='cell-0-0']") as VueWrapper<
@@ -198,23 +198,23 @@ describe("App", () => {
     });
     it("should set the game state to 'LOST' after a mine is revealed", async () => {
       vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
-        { rowIndex: 0, columnIndex: 1 },
         { rowIndex: 0, columnIndex: 2 },
         { rowIndex: 0, columnIndex: 3 },
         { rowIndex: 0, columnIndex: 4 },
         { rowIndex: 0, columnIndex: 5 },
         { rowIndex: 0, columnIndex: 6 },
         { rowIndex: 0, columnIndex: 7 },
-        { rowIndex: 1, columnIndex: 0 },
-        { rowIndex: 1, columnIndex: 1 },
         { rowIndex: 1, columnIndex: 2 },
+        { rowIndex: 2, columnIndex: 0 },
+        { rowIndex: 2, columnIndex: 1 },
+        { rowIndex: 2, columnIndex: 2 },
       ]);
       const app = mount(App);
       const cell = app.findComponent("[data-test='cell-0-0']") as VueWrapper<
         InstanceType<typeof Cell>
       >;
       await cell.trigger("click.left");
-      const mine = app.findComponent("[data-test='cell-0-1']") as VueWrapper<
+      const mine = app.findComponent("[data-test='cell-0-2']") as VueWrapper<
         InstanceType<typeof Cell>
       >;
       await mine.trigger("click.left");
@@ -278,23 +278,23 @@ describe("App", () => {
     });
     it("should not flag a hidden cell when right clicked while game state is 'LOST'", async () => {
       vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
-        { rowIndex: 0, columnIndex: 1 },
         { rowIndex: 0, columnIndex: 2 },
         { rowIndex: 0, columnIndex: 3 },
         { rowIndex: 0, columnIndex: 4 },
         { rowIndex: 0, columnIndex: 5 },
         { rowIndex: 0, columnIndex: 6 },
         { rowIndex: 0, columnIndex: 7 },
-        { rowIndex: 1, columnIndex: 0 },
-        { rowIndex: 1, columnIndex: 1 },
         { rowIndex: 1, columnIndex: 2 },
+        { rowIndex: 2, columnIndex: 0 },
+        { rowIndex: 2, columnIndex: 1 },
+        { rowIndex: 2, columnIndex: 2 },
       ]);
       const app = mount(App);
       const cell1 = app.findComponent("[data-test='cell-0-0']") as VueWrapper<
         InstanceType<typeof Cell>
       >;
       await cell1.trigger("click.left");
-      const mine = app.findComponent("[data-test='cell-0-1']") as VueWrapper<
+      const mine = app.findComponent("[data-test='cell-0-2']") as VueWrapper<
         InstanceType<typeof Cell>
       >;
       await mine.trigger("click.left");
