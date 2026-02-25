@@ -6,6 +6,7 @@ import {
   countAdjacentMines,
   getAdjacentCellCoordinates,
 } from "./game/adjacency";
+import DigitalDisplay from "./components/DigitalDisplay.vue";
 
 type GameState = "IDLE" | "PLAYING" | "LOST" | "WON";
 
@@ -126,19 +127,22 @@ defineExpose({
 
 <template>
   <div class="screen">
-    <div class="grid">
-      <div class="row" v-for="(row, rowIndex) in grid" :key="rowIndex">
-        <Cell
-          v-for="(column, columnIndex) in row"
-          :key="columnIndex"
-          :state="column.state"
-          :is-mine="column.isMine"
-          :is-won="gameState === 'WON'"
-          :adjacent-mines-count="column.adjacentMinesCount"
-          v-on:reveal="reveal(rowIndex, columnIndex)"
-          v-on:flag="flag(rowIndex, columnIndex)"
-          :data-test="`cell-${rowIndex}-${columnIndex}`"
-        />
+    <div class="grid-container">
+      <DigitalDisplay :digits="1" />
+      <div class="grid">
+        <div class="row" v-for="(row, rowIndex) in grid" :key="rowIndex">
+          <Cell
+            v-for="(column, columnIndex) in row"
+            :key="columnIndex"
+            :state="column.state"
+            :is-mine="column.isMine"
+            :is-won="gameState === 'WON'"
+            :adjacent-mines-count="column.adjacentMinesCount"
+            v-on:reveal="reveal(rowIndex, columnIndex)"
+            v-on:flag="flag(rowIndex, columnIndex)"
+            :data-test="`cell-${rowIndex}-${columnIndex}`"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -152,6 +156,16 @@ defineExpose({
   align-items: start;
   justify-content: center;
   padding-top: 100px;
+}
+
+.grid-container {
+  padding: 10px;
+  background-image: linear-gradient(to bottom, #f8bc48, #fcdc6e);
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .grid {
