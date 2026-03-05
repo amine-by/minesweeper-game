@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Cell, { type CellType } from "./components/Cell.vue";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { generateMinesCoordinates } from "./game/mines";
 import {
   countAdjacentMines,
@@ -18,6 +18,17 @@ const grid = ref<Grid>(
     Array.from({ length: 8 }, () => ({ state: "HIDDEN", isMine: false })),
   ),
 );
+const timer = ref<number>(0);
+
+watch(gameState, (state, _, onCleanup) => {
+  if (state !== "PLAYING") return;
+
+  const interval = setInterval(() => {
+    timer.value++;
+  }, 1000);
+
+  onCleanup(() => clearInterval(interval));
+});
 
 function placeMines(revealedRowIndex: number, revealedColumnIndex: number) {
   const minesCoordinates = generateMinesCoordinates(
@@ -128,7 +139,10 @@ defineExpose({
 <template>
   <div class="screen">
     <div class="grid-container">
-      <DigitalDisplay :digits="1" />
+      <div class="displays-container">
+        <DigitalDisplay :digits="13" />
+        <DigitalDisplay :data-test="'timer'" :digits="timer" />
+      </div>
       <div class="grid">
         <div class="row" v-for="(row, rowIndex) in grid" :key="rowIndex">
           <Cell
@@ -166,6 +180,14 @@ defineExpose({
   justify-content: center;
   flex-direction: column;
   gap: 10px;
+}
+
+.displays-container {
+  width: 100%;
+  display: flex;
+  flex-direction: "row";
+  justify-content: space-between;
+  padding-inline: 21px;
 }
 
 .grid {

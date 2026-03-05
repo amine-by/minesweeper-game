@@ -16,7 +16,9 @@ const content = computed(() => {
 </script>
 
 <template>
-  <div class="display">{{ content }}</div>
+  <div class="display">
+    <span class="display--content">{{ content }}</span>
+  </div>
 </template>
 
 <style scoped>
@@ -27,6 +29,17 @@ const content = computed(() => {
   width: 64px;
   height: 32px;
   border-radius: 6px;
+  border-bottom: "#0e0e0e";
+  border-width: 2px;
+  border-style: solid;
   background-image: linear-gradient(to bottom, #a01c1c 20%, #3a0a0a 80%);
+}
+
+.display--content {
+  background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to bottom, #f98c47, #f42204);
+  font-size: 24px;
+  font-family: "Share Tech Mono", monospace;
 }
 </style>

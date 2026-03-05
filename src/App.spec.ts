@@ -5,6 +5,8 @@ import App from "./App.vue";
 import Cell from "./components/Cell.vue";
 
 import * as minesModule from "./game/mines";
+import type DigitalDisplay from "./components/DigitalDisplay.vue";
+import { nextTick } from "vue";
 
 describe("App", () => {
   afterEach(() => {
@@ -64,7 +66,7 @@ describe("App", () => {
       const mine = app.findComponent("[data-test='cell-0-2']") as VueWrapper<
         InstanceType<typeof Cell>
       >;
-      await mine?.trigger("click.left");
+      await mine.trigger("click.left");
       const mines = app
         .findAllComponents(Cell)
         .filter((cell) => cell.props("isMine"));
@@ -325,6 +327,139 @@ describe("App", () => {
       >;
       await mine.trigger("click.right");
       expect(mine.props("state")).toBe("FLAGGED");
+    });
+  });
+
+  describe("timer", () => {
+    it("should set the timer to '0' on initial load", () => {
+      const app = mount(App);
+      const timer = app.findComponent("[data-test='timer']") as VueWrapper<
+        InstanceType<typeof DigitalDisplay>
+      >;
+      expect(timer.props("digits")).toBe(0);
+    });
+    it("should start the timer after the first cell is revealed", async () => {
+      vi.useFakeTimers();
+
+      const app = mount(App);
+
+      const timer = app.findComponent("[data-test='timer']") as VueWrapper<
+        InstanceType<typeof DigitalDisplay>
+      >;
+
+      vi.advanceTimersByTime(2000);
+      await nextTick();
+
+      expect(timer.props("digits")).toBe(0);
+
+      const cell = app.find("[data-test='cell-0-0']");
+      await cell.trigger("click.left");
+
+      vi.advanceTimersByTime(1000);
+      await nextTick();
+
+      expect(timer.props("digits")).toBeGreaterThan(0);
+
+      vi.useRealTimers();
+    });
+    it("should increment the timer by '1' every 1000 ms", async () => {
+      vi.useFakeTimers();
+
+      const app = mount(App);
+
+      const timer = app.findComponent("[data-test='timer']") as VueWrapper<
+        InstanceType<typeof DigitalDisplay>
+      >;
+
+      const cell = app.find("[data-test='cell-0-0']");
+      await cell.trigger("click.left");
+
+      for (let i = 0; i < 5; i++) {
+        vi.advanceTimersByTime(1000);
+        await nextTick();
+
+        expect(timer.props("digits")).toBe(i + 1);
+      }
+
+      vi.useRealTimers();
+    });
+    it("should stop the timer after a mine is revealed", async () => {
+      vi.useFakeTimers();
+
+      vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
+        { rowIndex: 0, columnIndex: 2 },
+        { rowIndex: 0, columnIndex: 3 },
+        { rowIndex: 0, columnIndex: 4 },
+        { rowIndex: 0, columnIndex: 5 },
+        { rowIndex: 0, columnIndex: 6 },
+        { rowIndex: 0, columnIndex: 7 },
+        { rowIndex: 1, columnIndex: 2 },
+        { rowIndex: 2, columnIndex: 0 },
+        { rowIndex: 2, columnIndex: 1 },
+        { rowIndex: 2, columnIndex: 2 },
+      ]);
+
+      const app = mount(App);
+
+      const cell = app.findComponent("[data-test='cell-0-0']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+
+      const mine = app.findComponent("[data-test='cell-0-2']") as VueWrapper<
+        InstanceType<typeof Cell>
+      >;
+
+      const timer = app.findComponent("[data-test='timer']") as VueWrapper<
+        InstanceType<typeof DigitalDisplay>
+      >;
+
+      await cell.trigger("click.left");
+
+      vi.advanceTimersByTime(1000);
+      await nextTick();
+
+      await mine.trigger("click.left");
+
+      vi.advanceTimersByTime(2000);
+      await nextTick();
+
+      expect(timer.props("digits")).toBe(1);
+      vi.useRealTimers();
+    });
+    it("should stop the timer after all non mine cells are revealed", async () => {
+      vi.useFakeTimers();
+
+      vi.spyOn(minesModule, "generateMinesCoordinates").mockReturnValue([
+        { rowIndex: 0, columnIndex: 0 },
+        { rowIndex: 0, columnIndex: 1 },
+        { rowIndex: 0, columnIndex: 2 },
+        { rowIndex: 0, columnIndex: 3 },
+        { rowIndex: 0, columnIndex: 4 },
+        { rowIndex: 1, columnIndex: 4 },
+        { rowIndex: 2, columnIndex: 4 },
+        { rowIndex: 3, columnIndex: 4 },
+        { rowIndex: 4, columnIndex: 4 },
+        { rowIndex: 5, columnIndex: 4 },
+      ]);
+
+      const app = mount(App);
+
+      const firstSafeCell = app.findComponent("[data-test='cell-0-0']");
+      const secondSafeCell = app.findComponent("[data-test='cell-0-7']");
+      const timer = app.findComponent("[data-test='timer']") as VueWrapper<
+        InstanceType<typeof DigitalDisplay>
+      >;
+
+      await firstSafeCell.trigger("click.left");
+      vi.advanceTimersByTime(1000);
+      await nextTick();
+
+      await secondSafeCell.trigger("click.left");
+      vi.advanceTimersByTime(2000);
+      await nextTick();
+
+      expect(timer.props("digits")).toBe(1);
+      vi.useRealTimers();
     });
   });
 });
