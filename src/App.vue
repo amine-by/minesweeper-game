@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Cell, { type CellType } from "./components/Cell.vue";
-import { ref, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import { generateMinesCoordinates } from "./game/mines";
 import {
   countAdjacentMines,
@@ -46,6 +46,12 @@ function placeMines(revealedRowIndex: number, revealedColumnIndex: number) {
     cell.isMine = true;
   });
 }
+
+const flagTracker = computed(() => {
+  return (
+    10 - grid.value.flat().filter((cell) => cell.state === "FLAGGED").length
+  );
+});
 
 function reveal(rowIndex: number, columnIndex: number) {
   const currentRow = grid.value[rowIndex];
@@ -140,7 +146,7 @@ defineExpose({
   <div class="screen">
     <div class="grid-container">
       <div class="displays-container">
-        <DigitalDisplay :digits="13" />
+        <DigitalDisplay :data-test="'flag-tracker'" :digits="flagTracker" />
         <DigitalDisplay :data-test="'timer'" :digits="timer" />
       </div>
       <div class="grid">

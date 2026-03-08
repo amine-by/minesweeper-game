@@ -462,4 +462,38 @@ describe("App", () => {
       vi.useRealTimers();
     });
   });
+
+  describe("flag-tracker", () => {
+    it("should display '10' when no cell is flagged", () => {
+      const app = mount(App);
+      const flagCounter = app.findComponent(
+        "[data-test='flag-tracker']",
+      ) as VueWrapper<InstanceType<typeof DigitalDisplay>>;
+      expect(flagCounter.props("digits")).toBe(10);
+    });
+    it("should display '9' when only one cell is flagged", async () => {
+      const app = mount(App);
+      const flagCounter = app.findComponent(
+        "[data-test='flag-tracker']",
+      ) as VueWrapper<InstanceType<typeof DigitalDisplay>>;
+      const cell = app.findComponent(Cell);
+      await cell.trigger("click.right");
+      expect(flagCounter.props("digits")).toBe(9);
+    });
+    it("should display '-10' when 20 cells are flagged", async () => {
+      const app = mount(App);
+      const flagCounter = app.findComponent(
+        "[data-test='flag-tracker']",
+      ) as VueWrapper<InstanceType<typeof DigitalDisplay>>;
+      const cells = app.findAllComponents(Cell).slice(0, 20) as VueWrapper<
+        InstanceType<typeof Cell>
+      >[];
+
+      for (const cell of cells) {
+        await cell.trigger("click.right");
+      }
+
+      expect(flagCounter.props("digits")).toBe(-10);
+    });
+  });
 });
