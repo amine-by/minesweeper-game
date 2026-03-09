@@ -17,7 +17,7 @@ const content = computed(() => {
 
 <template>
   <div class="display">
-    <span class="display--content">{{ content }}</span>
+    <span class="display-content">{{ content }}</span>
   </div>
 </template>
 
@@ -35,7 +35,7 @@ const content = computed(() => {
   background-image: linear-gradient(to bottom, #a01c1c 20%, #3a0a0a 80%);
 }
 
-.display--content {
+.display-content {
   background-clip: text;
   color: transparent;
   background-image: linear-gradient(to bottom, #f98c47, #f42204);

@@ -8,7 +8,7 @@ import {
 } from "./game/adjacency";
 import DigitalDisplay from "./components/DigitalDisplay.vue";
 
-type GameState = "IDLE" | "PLAYING" | "LOST" | "WON";
+export type GameState = "IDLE" | "PLAYING" | "LOST" | "WON";
 
 export type Grid = CellType[][];
 
@@ -186,6 +186,8 @@ defineExpose({
   justify-content: center;
   flex-direction: column;
   gap: 10px;
+  border-radius: 8px;
+  box-shadow: #00000040 0px 4px 4px 0px;
 }
 
 .displays-container {

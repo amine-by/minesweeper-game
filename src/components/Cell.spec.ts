@@ -13,7 +13,7 @@ describe("Cell", () => {
         },
       });
       const inner = cell.find("div");
-      expect(inner.classes()).toContain("cell--inner--hidden");
+      expect(inner.classes()).toContain("cell-inner-hidden");
     });
     it("should display revealed inner style when state is 'FLAGGED' and isWon is false", () => {
       const cell = mount(Cell, {
@@ -24,7 +24,7 @@ describe("Cell", () => {
         },
       });
       const inner = cell.find("div");
-      expect(inner.classes()).toContain("cell--inner--hidden");
+      expect(inner.classes()).toContain("cell-inner-hidden");
     });
     it("should display won inner style when state is 'FLAGGED' and isWon is true", () => {
       const cell = mount(Cell, {
@@ -35,7 +35,7 @@ describe("Cell", () => {
         },
       });
       const inner = cell.find("div");
-      expect(inner.classes()).toContain("cell--inner--won");
+      expect(inner.classes()).toContain("cell-inner-won");
     });
     it("should display revealed inner style when state is 'REVEALED' and isMine is false", () => {
       const cell = mount(Cell, {
@@ -46,7 +46,7 @@ describe("Cell", () => {
         },
       });
       const inner = cell.find("div");
-      expect(inner.classes()).toContain("cell--inner--revealed");
+      expect(inner.classes()).toContain("cell-inner-revealed");
     });
     it("should display lost inner style when state is 'REVEALED' and isMine is true", () => {
       const cell = mount(Cell, {
@@ -57,7 +57,7 @@ describe("Cell", () => {
         },
       });
       const inner = cell.find("div");
-      expect(inner.classes()).toContain("cell--inner--lost");
+      expect(inner.classes()).toContain("cell-inner-lost");
     });
   });
 
