@@ -496,4 +496,54 @@ describe("App", () => {
       expect(flagCounter.props("digits")).toBe(-10);
     });
   });
+
+  describe("reset-button", () => {
+    it("should reset the grid when the reset button is pressed", async () => {
+      const app = mount(App);
+
+      const cells = app.findAllComponents(Cell);
+      await cells[0]?.trigger("click.left");
+
+      const resetButton = app.findComponent("[data-test='reset-button']");
+      await resetButton.trigger("click");
+
+      const mines = cells.filter((cell) => cell.props("isMine"));
+
+      expect(mines.length).toBe(0);
+      cells.forEach((cell) => {
+        expect(cell.props("state")).toBe("HIDDEN");
+      });
+    });
+    it("should set the gameState to 'IDLE' when the reset button is pressed", async () => {
+      const app = mount(App);
+
+      const cell = app.findComponent("[data-test='cell-0-0']");
+      await cell.trigger("click.left");
+
+      const resetButton = app.findComponent("[data-test='reset-button']");
+      await resetButton.trigger("click");
+
+      expect(app.vm.gameState).toBe("IDLE");
+    });
+    it("should set the timer to '0' when the reset button is pressed", async () => {
+      vi.useFakeTimers();
+      const app = mount(App);
+
+      const cell = app.findComponent("[data-test='cell-0-0']");
+      const resetButton = app.findComponent("[data-test='reset-button']");
+      const timer = app.findComponent("[data-test='timer']") as VueWrapper<
+        InstanceType<typeof DigitalDisplay>
+      >;
+
+      await cell.trigger("click.left");
+
+      vi.advanceTimersByTime(1000);
+      await nextTick();
+
+      await resetButton.trigger("click");
+
+      expect(timer.props("digits")).toBe(0);
+      vi.useRealTimers();
+    });
+  });
 });

@@ -7,6 +7,7 @@ import {
   getAdjacentCellCoordinates,
 } from "./game/adjacency";
 import DigitalDisplay from "./components/DigitalDisplay.vue";
+import ResetButton from "./components/ResetButton.vue";
 
 export type GameState = "IDLE" | "PLAYING" | "LOST" | "WON";
 
@@ -29,6 +30,14 @@ watch(gameState, (state, _, onCleanup) => {
 
   onCleanup(() => clearInterval(interval));
 });
+
+function resetGame() {
+  gameState.value = "IDLE";
+  grid.value = Array.from({ length: 8 }, () =>
+    Array.from({ length: 8 }, () => ({ state: "HIDDEN", isMine: false })),
+  );
+  timer.value = 0;
+}
 
 function placeMines(revealedRowIndex: number, revealedColumnIndex: number) {
   const minesCoordinates = generateMinesCoordinates(
@@ -147,6 +156,11 @@ defineExpose({
     <div class="grid-container">
       <div class="displays-container">
         <DigitalDisplay :data-test="'flag-tracker'" :digits="flagTracker" />
+        <ResetButton
+          :data-test="'reset-button'"
+          :gameState="gameState"
+          v-on:resetGame="resetGame()"
+        />
         <DigitalDisplay :data-test="'timer'" :digits="timer" />
       </div>
       <div class="grid">
@@ -194,6 +208,7 @@ defineExpose({
   width: 100%;
   display: flex;
   flex-direction: "row";
+  align-items: center;
   justify-content: space-between;
   padding-inline: 21px;
 }
