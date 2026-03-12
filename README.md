@@ -2,7 +2,7 @@
 
 A classic **Minesweeper** implementation where the goal is to reveal all safe cells without triggering a mine.
 
-![Game Screenshot](screenshot.png)
+![Game Screenshot](assets/screenshot.png)
 
 ## Gameplay
 
