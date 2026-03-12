@@ -1,48 +1,40 @@
-# minesweeper-game
+# Minesweeper Game
 
-This template should help get you started developing with Vue 3 in Vite.
+A classic **Minesweeper** implementation where the goal is to reveal all safe cells without triggering a mine.
 
-## Recommended IDE Setup
+![Game Screenshot](screenshot.png)
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Gameplay
 
-## Recommended Browser Setup
+- **Left-click** a hidden cell to reveal it.
+- **Right-click** a hidden cell to place or remove a flag.
+- **Click the emote button** to restart the game.
+- Revealing a **mine** immediately ends the game.
+- Reveal **all non-mine** cells to win.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## Getting Started
 
-## Type Support for `.vue` Imports in TS
+Follow the steps below to run the project locally.
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+### Prerequisites
 
-## Customize configuration
+- [Node.js](https://nodejs.org/)
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+### Installation
 
-## Project Setup
-
-```sh
+```bash
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Running
 
-```sh
+```bash
+# Start development server
 npm run dev
-```
 
-### Type-Check, Compile and Minify for Production
-
-```sh
+# Compile and Minify for Production
 npm run build
-```
 
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
+# Run Unit Tests with [Vitest](https://vitest.dev/)
 npm run test:unit
 ```
